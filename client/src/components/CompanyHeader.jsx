@@ -46,7 +46,7 @@ const CompanyHeader = ({ name }) => {
       </div>
 
       <div>
-        <div className='text-3xl sm:text-4xl lg:text-7xl'>{name ?? logoData?.name ?? stockStatus?.symbol}</div>
+        <div className='max-w-70 sm:max-w-200 truncate text-3xl sm:text-4xl lg:text-7xl'>{name ?? logoData?.name ?? stockStatus?.symbol}</div>
       </div>
       <div className={`col-span-full sm:pl-0 sm:col-span-1`}>
         <div className='text-base md:text-2xl'>{stockStatus?.price} <span>{stockStatus?.change}</span> <span>{stockStatus?.changePercent}</span></div>
