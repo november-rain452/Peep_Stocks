@@ -12,33 +12,43 @@ const StockProvider = ({ children }) => {
   const [symbol, setSymbol] = useState("IBM");
 
   useEffect(() => {
+
+    let activeRequest = true;
+
     const fetchStockDataUniversal = async (symbol) => {
       try {
 
         setLoading(true);
         setError(null);
 
-        const dailyFetchedData = await fetchDailyStocks(symbol);
-        setDailyData(dailyFetchedData);     
+        const [dailyD,weeklyD,monthlyD] = await Promise.all([
+          fetchDailyStocks(symbol),
+          fetchWeeklyStocks(symbol),
+          fetchMonthlyStocks(symbol)
+        ]);
 
-        const weeklyFetchedData = await fetchWeeklyStocks(symbol);
-        setWeeklyData(weeklyFetchedData);
-
-        const monthlyFetchedData = await fetchMonthlyStocks(symbol);
-        setMonthlyData(monthlyFetchedData);
-
+        if(activeRequest){
+          setDailyData(dailyD);
+          setWeeklyData(weeklyD);
+          setMonthlyData(monthlyD);
+        }
       }
       catch (err) {
+        if(activeRequest){
         console.error(err);
-        setError(err.message || "Failed to fetch stock data");
+        setError(err.message || "Failed to fetch stock data");}
       }
       finally {
-        setLoading(false);
+        if(activeRequest){
+        setLoading(false);}
       }
     };
 
     if (symbol) {
       fetchStockDataUniversal(symbol);
+    }
+    return ()=>{
+      activeRequest=false;
     }
 
   }, [symbol])
