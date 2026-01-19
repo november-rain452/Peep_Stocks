@@ -80,7 +80,7 @@ public class StockClient {
         return webClient.get().uri(uriBuilder -> uriBuilder
                 .queryParam("function","TIME_SERIES_MONTHLY_ADJUSTED")
                 .queryParam("symbol",stockSymbol)
-                .queryParam("apikey",vantageAPIKey2)
+                .queryParam("apikey",vantageAPIKey)
                 .build())
                 .retrieve()
                 .bodyToMono((AlphaVantageMonthlyResponse.class)).block();
