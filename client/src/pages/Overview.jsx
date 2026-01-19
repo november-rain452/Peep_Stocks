@@ -12,7 +12,7 @@ const Overview = () => {
 
   const [overviewData, setOverviewData] = useState(null);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
 
@@ -44,50 +44,63 @@ const Overview = () => {
     return () => {
       isActive = false;
     }
-
   }, [symbol]);
 
   if (error) return <p>{error}</p>;
-  if (loading) return <p>Loading...</p>;
-  
+
+  const displayValue = (loading, value) => {
+    if (loading || value === null || value === undefined) {
+      return "-";
+    }
+    else return value;
+  }
+
   return (
     <div className='flex flex-col gap-5
                     px-8 py-8 sm:px-16'>
-      <CompanyHeader name={overviewData.name} />
+      <CompanyHeader name={overviewData?.name} />
       <CardHeader
-        country={overviewData.country}
-        exchange={overviewData.exchange}
-        currency={overviewData.currency}
-        marketCap={overviewData.marketCap}
-        peRatio={overviewData.peRatio}
+        country={overviewData?.country}
+        exchange={overviewData?.exchange}
+        currency={overviewData?.currency}
+        marketCap={overviewData?.marketCap}
+        peRatio={overviewData?.peRatio}
+        loading={loading}
+        displayValue={displayValue}
       />
       <FiftyTwoWeekHighLow
-        low={overviewData.fiftyTwoWeekLow}
-        high={overviewData.fiftyTwoWeekHigh}
+        low={overviewData?.fiftyTwoWeekLow}
+        high={overviewData?.fiftyTwoWeekHigh}
         current={price}
+        loading={loading}
+        displayValue={displayValue}
       />
-      <DescriptionOverview description={overviewData.description} />
+      <DescriptionOverview
+        description={overviewData?.description}
+        loading={loading}
+        displayValue={displayValue}
+      />
       <OverviewChartArea />
     </div>
   )
 }
 
 
-const CardHeader = ({ country, exchange, currency, marketCap, peRatio }) => {
+const CardHeader = ({ country, exchange, currency, marketCap, peRatio, loading, displayValue }) => {
 
   return (
     <div className='flex flex-col items-center gap-2
                     sm:items-start sm:flex-row
                     text-xl md:text-2xl'>
       <div>
-        <span>{country}</span> • <span className='text-pink-400'>{exchange}</span> • <span>{currency}</span>
+        <span>{displayValue(loading, country)}</span> • <span className='text-pink-400'>{displayValue(loading, exchange)}</span> • <span>{displayValue(loading, currency)}</span>
       </div>
       <div className='flex items-center gap-4 ml-4 sm:ml-6'>
         <div className='flex flex-col gap-1 items-center sm:flex-row'>
-          <h4>Market Cap</h4> <h4>{marketCap}</h4>
+          <h4>Market Cap</h4> <h4>{displayValue(loading, marketCap)}</h4>
         </div>
         <div className='flex flex-col gap-1 items-center sm:flex-row'>
-          <h4>P/E Ratio</h4> <h4>{peRatio}</h4>
+          <h4>P/E Ratio</h4> <h4>{displayValue(loading, peRatio)}</h4>
         </div>
         <div>
         </div>
@@ -96,37 +109,34 @@ const CardHeader = ({ country, exchange, currency, marketCap, peRatio }) => {
   )
 }
 
+const FiftyTwoWeekHighLow = ({low, high, current, loading, displayValue}) => {
+  let diff = high - low;
+  let percentage = (loading || diff === 0) ? 0 : (current - low) / (diff) * 100;
 
-const DescriptionOverview = () => {
-  return (
-    <div className="text-sm md:text-base leading-relaxed text-slate-600 ">
-      <p>
-        Apple Inc. is a global technology company designing and selling consumer
-        electronics such as the iPhone, Mac, iPad, and Apple Watch.
-        It also develops software and services including iOS, macOS, the App Store,
-        iCloud, and Apple Music, and is known for its strong ecosystem and brand.
-      </p>
-    </div>
-
-  )
-}
-
-const FiftyTwoWeekHighLow = () => {
-  let current = 270;
-  let percentage = (current - 209) / (324 - 209) * 100;
   return (
     <div className='space-y-2'>
       <div className='flex justify-between'>
-        <span>Low 209.2</span>
-        <span>High 324.9</span>
+        <span>Low {displayValue(loading, low)}</span>
+        <span>High {displayValue(loading, high)}</span>
       </div>
       <div className='relative h-1  w-full bg-gray-200 rounded'>
         <div className='absolute h-3 w-1 bg-pink-400'
           style={{ left: `${percentage}%` }}></div>
         <div className='absolute top-2'
-          style={{ left: `${percentage - 1.5}%` }}>{current}</div>
+          style={{ left: `${percentage - 1.5}%` }}>{displayValue(loading, current)}</div>
       </div>
     </div>
+  )
+}
+
+const DescriptionOverview = ({description, loading, displayValue}) => {
+  return (
+    <div className="text-sm md:text-base leading-relaxed text-slate-600 ">
+      <p>
+        {displayValue(loading, description)}
+      </p>
+    </div>
+
   )
 }
 
