@@ -5,23 +5,42 @@ import StockContext from '../context/context-creation/StockContext';
 
 const CompanyHeader = ({ name }) => {
   const { stockStatus } = useContext(StockStatusContext);
-  const {symbol} = useContext(StockContext);
+  const { symbol } = useContext(StockContext);
 
   const [logoData, setLogoData] = useState(null);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
 
+    let isActive = true;
+
     if (!symbol) return;
+
     setError(null);
     setLogoData(null);
+
     fetchStockLogo(symbol)
-      .then(setLogoData)
-      .catch(err => setError(err.message));
+      .then(data => {
+        if (isActive) {
+          setLogoData(data);
+        }
+      })
+      .catch(err => {
+        if (isActive) {
+          setError(err.message);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    }
   }, [symbol]);
 
   if (!stockStatus) return null;
+
+  const isPositive = stockStatus?.change >= 0;
+  const sign = isPositive ? "+" : "";
+  const color = isPositive ? "text-green-800" : "text-red-800";
 
   return (
     <div className='flex flex-col items-center gap-4
@@ -49,7 +68,10 @@ const CompanyHeader = ({ name }) => {
         <div className='max-w-70 sm:max-w-200 truncate text-3xl sm:text-4xl lg:text-7xl'>{name ?? logoData?.name ?? stockStatus?.symbol}</div>
       </div>
       <div className={`col-span-full sm:pl-0 sm:col-span-1`}>
-        <div className='text-base md:text-2xl'>{stockStatus?.price} <span>{stockStatus?.change}</span> <span>{stockStatus?.changePercent}</span></div>
+        <div className='text-xl md:text-4xl flex items-end gap-3'>{stockStatus?.price}
+          <span className={`${color} text-base md:text-xl`}>{sign}{stockStatus?.change}</span>
+          <span className={`${color} text-base md:text-xl`}>{sign}{stockStatus?.changePercent}</span>
+        </div>
       </div>
     </div>
   )
