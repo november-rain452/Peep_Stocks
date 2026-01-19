@@ -10,14 +10,37 @@ const StockNews = () => {
 
   const [newsArticles, setNewsArticles] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+
+    let isActive = true;
+
     if (!symbol) return;
 
     setError(null);
     setNewsArticles([]);
+    setLoading(true);
 
-    fetchLatestNews(symbol).then(setNewsArticles).catch(err => setError(err.message));
+    fetchLatestNews(symbol)
+      .then(data => {
+        if (isActive) {
+          setNewsArticles(data);
+        }
+      }).catch(err => {
+        if (isActive) {
+          setError(err.message);
+        }
+      }).finally(() => {
+        if (isActive) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    }
+
   }, [symbol]);
 
 
@@ -35,12 +58,12 @@ const NewsArea = ({ news, error }) => {
 
   if (error) return (<p>Error : {error}</p>);
 
-  
+
 
   return (
     <div className='grid grid-cols-1 gap-6 justify-items-center
                   sm:grid-cols-2 lg:grid-cols-3'>
-      {news.map((article) =><NewsCard key={article.newsURL} newsData={article} />)}
+      {news.map((article) => <NewsCard key={article.newsURL} newsData={article} />)}
     </div>
   )
 }

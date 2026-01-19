@@ -12,20 +12,44 @@ const Overview = () => {
 
   const [overviewData, setOverviewData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
 
-    if (!symbol) return; 
-    
+    let isActive = true;
+
+    if (!symbol) return;
+
     setError(null);
     setOverviewData(null);
-    
-    fetchCompanyOverview(symbol).then(setOverviewData).catch(err => setError(err.message));
-    
-  }, [symbol])
-  
+    setLoading(true);
+
+    fetchCompanyOverview(symbol)
+      .then(data => {
+        if (isActive) {
+          setOverviewData(data);
+        }
+      }
+      ).catch(err => {
+        if (isActive) {
+          setError(err.message)
+        }
+      }).finally(() => {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+      );
+
+    return () => {
+      isActive = false;
+    }
+
+  }, [symbol]);
+
   if (error) return <p>{error}</p>;
-  if (!overviewData) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
+  
   return (
     <div className='flex flex-col gap-5
                     px-8 py-8 sm:px-16'>
@@ -49,7 +73,7 @@ const Overview = () => {
 }
 
 
-const CardHeader = ({country,exchange,currency,marketCap,peRatio}) => {
+const CardHeader = ({ country, exchange, currency, marketCap, peRatio }) => {
 
   return (
     <div className='flex flex-col items-center gap-2
