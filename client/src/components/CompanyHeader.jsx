@@ -4,11 +4,13 @@ import { fetchStockLogo } from '../data-access/StockQuerying';
 import StockContext from '../context/context-creation/StockContext';
 
 const CompanyHeader = ({ name }) => {
-  const { stockStatus } = useContext(StockStatusContext);
+  
+  const { stockStatus, loading } = useContext(StockStatusContext);
   const { symbol } = useContext(StockContext);
 
   const [logoData, setLogoData] = useState(null);
   const [error, setError] = useState(null);
+  const [imgLoading, setImgLoading] = useState(true);
 
   useEffect(() => {
 
@@ -18,6 +20,7 @@ const CompanyHeader = ({ name }) => {
 
     setError(null);
     setLogoData(null);
+    setImgLoading(true);
 
     fetchStockLogo(symbol)
       .then(data => {
@@ -29,14 +32,32 @@ const CompanyHeader = ({ name }) => {
         if (isActive) {
           setError(err.message);
         }
-      });
+      })
+      .finally(() => {
+        if (isActive) {
+          setImgLoading(false);
+        }
+      }
+      )
 
     return () => {
       isActive = false;
     }
   }, [symbol]);
 
-  if (!stockStatus) return null;
+  function displayValue(value) {
+    if (loading || value === undefined || value === null) return "-";
+    else
+      return value;
+  }
+
+  function formatPercent(value) {
+    const num = Number.parseFloat(value);
+    if(loading || isNaN(num)) return "-";
+    return num.toFixed(2);
+  }
+
+  const displayedName = name ?? logoData?.name ?? stockStatus?.symbol;
 
   const isPositive = stockStatus?.change >= 0;
   const sign = isPositive ? "+" : "";
@@ -58,19 +79,19 @@ const CompanyHeader = ({ name }) => {
         ) : (
           <img
             className="w-3/4 h-3/4 object-contain"
-            src={logoData?.image ?? "/circle_placeholder.svg"}
+            src={imgLoading ? "/circle_placeholder.svg" : logoData?.image ?? "/circle_placeholder.svg"}
             alt={stockStatus?.symbol ?? "Stock Image"}
           />
         )}
       </div>
 
       <div>
-        <div className='max-w-70 sm:max-w-200 truncate text-3xl sm:text-4xl lg:text-7xl'>{name ?? logoData?.name ?? stockStatus?.symbol}</div>
+        <div className='max-w-70 sm:max-w-200 truncate text-3xl sm:text-4xl lg:text-7xl'>{displayedName}</div>
       </div>
       <div className={`col-span-full sm:pl-0 sm:col-span-1`}>
-        <div className='text-xl md:text-4xl flex items-end gap-3'>{stockStatus?.price}
-          <span className={`${color} text-base md:text-xl`}>{sign}{stockStatus?.change}</span>
-          <span className={`${color} text-base md:text-xl`}>{sign}{stockStatus?.changePercent}</span>
+        <div className='text-xl md:text-4xl flex items-end gap-3'>{displayValue(stockStatus?.price)}
+          <span className={`${color} text-base md:text-xl`}>{sign}{displayValue(stockStatus?.change)}</span>
+          <span className={`${color} text-base md:text-xl`}>{sign}{formatPercent(stockStatus?.changePercent)}</span>
         </div>
       </div>
     </div>

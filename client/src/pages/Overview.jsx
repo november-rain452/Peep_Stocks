@@ -46,7 +46,6 @@ const Overview = () => {
     }
   }, [symbol]);
 
-  if (error) return <p>{error}</p>;
 
   const displayValue = (loading, value) => {
     if (loading || value === null || value === undefined) {
@@ -58,6 +57,7 @@ const Overview = () => {
   return (
     <div className='flex flex-col gap-5
                     px-8 py-8 sm:px-16'>
+      {error}               
       <CompanyHeader name={overviewData?.name} />
       <CardHeader
         country={overviewData?.country}
