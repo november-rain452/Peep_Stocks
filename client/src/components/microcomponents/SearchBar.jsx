@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react'
 import searchIcon from '../../assets/searchIcon.svg'
-import StockContext from '../../context/context-creation/StockContext';
+import SymbolContext from '../../context/context-creation/SymbolContext';
 
 const SearchBar = () => {
-    const {searchStock} = useContext(StockContext);
+    const {searchSymbol} = useContext(SymbolContext);
     const [searchQuery, setSearchQuery] = useState("");
 
     const handleSearch =()=>{
         if(searchQuery.trim()==='') {return;}
-        searchStock(searchQuery);
+        searchSymbol(searchQuery);
         setSearchQuery("");
     }
      function handleKeyDown(e){
