@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react'
 import ChartData from '../charts/ChartData'
 import CompanyHeader from '../components/CompanyHeader'
-import StockContext from '../context/context-creation/StockContext';
 import { fetchCompanyOverview } from '../data-access/StockQuerying';
 import StockStatusContext from '../context/context-creation/StockStatusContext';
+import SymbolContext from '../context/context-creation/SymbolContext';
+import StockContext from '../context/context-creation/StockContext';
+import ParagraphPlaceholder from '../utils/ParagraphPlaceholder';
 
 const Overview = () => {
 
-  const { symbol } = useContext(StockContext);
+  const { symbol } = useContext(SymbolContext);
   const { price } = useContext(StockStatusContext);
 
   const [overviewData, setOverviewData] = useState(null);
@@ -56,8 +58,7 @@ const Overview = () => {
 
   return (
     <div className='flex flex-col gap-5
-                    px-8 py-8 sm:px-16'>
-      {error}               
+                    px-8 py-8 sm:px-16'>             
       <CompanyHeader name={overviewData?.name} />
       <CardHeader
         country={overviewData?.country}
@@ -79,6 +80,7 @@ const Overview = () => {
         description={overviewData?.description}
         loading={loading}
         displayValue={displayValue}
+        error={error}
       />
       <OverviewChartArea />
     </div>
@@ -129,11 +131,11 @@ const FiftyTwoWeekHighLow = ({low, high, current, loading, displayValue}) => {
   )
 }
 
-const DescriptionOverview = ({description, loading, displayValue}) => {
+const DescriptionOverview = ({description, loading, error}) => {
   return (
-    <div className="text-sm md:text-base leading-relaxed text-slate-600 ">
+    <div className="min-h-20 text-sm md:text-base leading-relaxed text-slate-600">
       <p>
-        {displayValue(loading, description)}
+        {error ? <div className='flex justify-center'>{error}</div> : loading ? ParagraphPlaceholder :description }
       </p>
     </div>
 
@@ -141,7 +143,8 @@ const DescriptionOverview = ({description, loading, displayValue}) => {
 }
 
 const OverviewChartArea = () => {
-  const { dailyData, weeklyData, monthlyData, loading, error, symbol } = useContext(StockContext);
+  const { dailyData, weeklyData, monthlyData, loading, error } = useContext(StockContext);
+  const {symbol} = useContext(SymbolContext);
   if (error) return (<div className='flex items-center justify-center'>
     <p>Error : {error}</p>
   </div>);
