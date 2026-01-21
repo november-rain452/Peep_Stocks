@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import CompanyHeader from '../components/CompanyHeader'
 import NewsCard from '../components/microcomponents/NewsCard'
-import StockContext from '../context/context-creation/StockContext';
 import { fetchLatestNews } from '../data-access/StockQuerying';
+import SymbolContext from '../context/context-creation/SymbolContext';
 
 const StockNews = () => {
 
-  const { symbol } = useContext(StockContext);
+  const { symbol } = useContext(SymbolContext);
 
   const [newsArticles, setNewsArticles] = useState([]);
   const [error, setError] = useState(null);

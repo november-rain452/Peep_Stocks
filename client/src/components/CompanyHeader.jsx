@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import StockStatusContext from '../context/context-creation/StockStatusContext'
 import { fetchStockLogo } from '../data-access/StockQuerying';
-import StockContext from '../context/context-creation/StockContext';
+import SymbolContext from '../context/context-creation/SymbolContext';
 
 const CompanyHeader = ({ name }) => {
   
   const { stockStatus, loading } = useContext(StockStatusContext);
-  const { symbol } = useContext(StockContext);
+  const { symbol } = useContext(SymbolContext);
 
   const [logoData, setLogoData] = useState(null);
   const [error, setError] = useState(null);

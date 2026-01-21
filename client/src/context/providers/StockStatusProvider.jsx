@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
-import StockContext from '../context-creation/StockContext';
 import { fetchStockStatus } from '../../data-access/StockQuerying';
 import StockStatusContext from '../context-creation/StockStatusContext';
+import SymbolContext from '../context-creation/SymbolContext';
 
 const StockStatusProvider = ({children}) => {
 
@@ -9,7 +9,7 @@ const StockStatusProvider = ({children}) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const { symbol } = useContext(StockContext);
+    const { symbol } = useContext(SymbolContext);
     
     useEffect(() => {
 
