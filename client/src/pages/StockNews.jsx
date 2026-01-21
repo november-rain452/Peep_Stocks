@@ -49,18 +49,21 @@ const StockNews = () => {
                     px-8 py-8 sm:px-16'>
       <CompanyHeader />
       <h1 className='text-base sm:text-xl md:text-2xl self-center'>NEWS</h1>
-      <NewsArea news={newsArticles} error={error} />
+      <NewsArea news={newsArticles} error={error} loadingState={loading} />
     </div>
   )
 }
 
-const NewsArea = ({ news, error }) => {
+const NewsArea = ({ news, error, loadingState }) => {
 
-  if (error) return (<p>Error : {error}</p>);
+  if(error) return <div className='flex items-center justify-center'>{error}</div>
 
-
-
-  return (
+  if(loadingState) return (
+   <div className='flex items-center justify-center'>
+     <div className='w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin'></div>
+   </div> )
+ 
+ return (
     <div className='grid grid-cols-1 gap-6 justify-items-center
                   sm:grid-cols-2 lg:grid-cols-3'>
       {news.map((article) => <NewsCard key={article.newsURL} newsData={article} />)}
