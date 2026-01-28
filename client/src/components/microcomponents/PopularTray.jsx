@@ -1,12 +1,13 @@
 import React, { useContext } from 'react'
 import StockContext from '../../context/context-creation/StockContext';
+import SymbolContext from '../../context/context-creation/SymbolContext';
 
 const PopularTray = () => {
 
-  const {searchStock} = useContext(StockContext);
+  const {searchSymbol} = useContext(SymbolContext);
 
   const handleClick = (symbol)=>{
-      searchStock(symbol);
+      searchSymbol(symbol);
   }
 
 
