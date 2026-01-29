@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import SearchBar from '../microcomponents/SearchBar'
 
@@ -6,9 +6,18 @@ const Navbar = () => {
   const [toggledSearchState, setToggledSearchState] = useState(false);
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const inputRef = useRef(null);
+
+
   function toggleSearch() {
     setToggledSearchState(prev => !prev);
   }
+
+  useEffect(() => {
+    if (toggledSearchState) {
+      inputRef.current?.focus();
+    }
+  }, [toggledSearchState]);
 
   return (
     <div className='sticky top-0 z-9999 bg-white'>
@@ -22,7 +31,7 @@ const Navbar = () => {
           <Link to="/overview">Overview</Link>
           <Link to="/news">News</Link>
         </div>
-        {!isHome && <div className='hidden lg:block'> <SearchBar/>  </div>}
+        {!isHome && <div className='hidden lg:block'> <SearchBar />  </div>}
         {isHome ? null :
           <div className='relative'>
             <button onClick={toggleSearch} className='w-4 h-4 hover:cursor-pointer
@@ -37,23 +46,23 @@ const Navbar = () => {
           <div>Dashboard</div>
         </div>
       </div>
-      {!isHome && (<FloatySearchBar open={toggledSearchState}/>)}
+      {!isHome && (<FloatySearchBar inputRef={inputRef} open={toggledSearchState} />)}
 
     </div>
   )
 }
 
-const FloatySearchBar = ({ open }) => {
+const FloatySearchBar = ({ inputRef, open }) => {
   return (
     <div
       className={`bg-white px-4 w-full transition-all duration-300 ease-out 
         transform origin-top lg:hidden overflow-hidden
-        ${open 
-          ? "h-14 opacity-100 translate-y-0 py-2"   
-          : "h-0 opacity-0 -translate-y-2 py-0 pointer-events-none" 
+        ${open
+          ? "h-14 opacity-100 translate-y-0 py-2"
+          : "h-0 opacity-0 -translate-y-2 py-0 pointer-events-none"
         }`}
     >
-      <SearchBar />
+      <SearchBar ref={inputRef} />
     </div>
   );
 };

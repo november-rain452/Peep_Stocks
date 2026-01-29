@@ -1,8 +1,8 @@
-import React, { useContext, useState } from 'react'
+import React, { forwardRef, useContext, useState } from 'react'
 import searchIcon from '../../assets/searchIcon.svg'
 import SymbolContext from '../../context/context-creation/SymbolContext';
 
-const SearchBar = () => {
+const SearchBar = forwardRef((_, inputRef) => {
     const {searchSymbol} = useContext(SymbolContext);
     const [searchQuery, setSearchQuery] = useState("");
 
@@ -15,9 +15,11 @@ const SearchBar = () => {
       if(e.key === 'Enter')
         { handleSearch(); }    
     }
+    
   return (
     <div className='w-full relative group'>
           <input type="search"
+            ref={inputRef}
             placeholder="Eg. AAPL"
             value={searchQuery}
             onChange={(e)=>setSearchQuery(e.target.value)}
@@ -38,5 +40,5 @@ const SearchBar = () => {
                 <img src={searchIcon} alt="SearchIcon" className='w-4 h-4 md:w-6 md:h-6 mt-1' /></button>
         </div>
   )
-}
+})
 export default SearchBar
